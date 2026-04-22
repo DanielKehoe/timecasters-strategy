@@ -32,11 +32,11 @@
 
 **Current spec version: `2025-11-25`.** MCP uses date-based version strings (`YYYY-MM-DD`) that change only on backward-incompatible revisions. Revision history since November 2024 launch:
 
-| Date | Key changes |
-|---|---|
-| **2024-11-05** | Initial public launch. HTTP+SSE transport, tools, resources, prompts, sampling ([spec launch announcement](https://www.anthropic.com/news/model-context-protocol), 2024-11-25) |
-| **2025-03-26** | OAuth 2.1 authorization framework, Streamable HTTP transport replacing HTTP+SSE, JSON-RPC batching, tool annotations (read-only/destructive), audio content type ([changelog](https://modelcontextprotocol.io/specification/2025-03-26/changelog)) |
-| **2025-06-18** | Removed JSON-RPC batching; structured tool output; classified servers as OAuth 2.1 Resource Servers with protected-resource metadata; mandated RFC 8707 Resource Indicators to block token-theft; added **elicitation** (servers can ask users for input mid-call); resource links in tool results; `MCP-Protocol-Version` HTTP header ([changelog](https://modelcontextprotocol.io/specification/2025-06-18/changelog)) |
+| Date           | Key changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **2024-11-05** | Initial public launch. HTTP+SSE transport, tools, resources, prompts, sampling ([spec launch announcement](https://www.anthropic.com/news/model-context-protocol), 2024-11-25)                                                                                                                                                                                                                                                                                                                                   |
+| **2025-03-26** | OAuth 2.1 authorization framework, Streamable HTTP transport replacing HTTP+SSE, JSON-RPC batching, tool annotations (read-only/destructive), audio content type ([changelog](https://modelcontextprotocol.io/specification/2025-03-26/changelog))                                                                                                                                                                                                                                                               |
+| **2025-06-18** | Removed JSON-RPC batching; structured tool output; classified servers as OAuth 2.1 Resource Servers with protected-resource metadata; mandated RFC 8707 Resource Indicators to block token-theft; added **elicitation** (servers can ask users for input mid-call); resource links in tool results; `MCP-Protocol-Version` HTTP header ([changelog](https://modelcontextprotocol.io/specification/2025-06-18/changelog))                                                                                         |
 | **2025-11-25** | OpenID Connect Discovery 1.0 for auth-server discovery, icons metadata on tools/resources/prompts (SEP-973), incremental scope consent via `WWW-Authenticate` (SEP-835), URL-mode elicitation (SEP-1036), tool calling *inside* sampling (SEP-1577), OAuth Client ID Metadata Documents (SEP-991), experimental **tasks** primitive for durable/deferred requests (SEP-1686), JSON Schema 2020-12 default dialect, SDK tiering ([changelog](https://modelcontextprotocol.io/specification/2025-11-25/changelog)) |
 
 **Governance.** MCP was moved into the Linux Foundation as **"Model Context Protocol a Series of LF Projects, LLC"** ([governance doc](https://modelcontextprotocol.io/community/governance), Apr 2026). Structure is BDFL-style, explicitly modeled on Python/PyTorch:
@@ -54,21 +54,22 @@ MCP also sits under the **Agentic AI Foundation**, announced December 2025 under
 
 Feature notation: T = Tools, R = Resources, P = Prompts, S = Sampling, E = Elicitation.
 
-| Client | T | R | P | S | E | Notes |
-|---|---|---|---|---|---|---|
-| **Claude Desktop** | yes | yes | yes | partial | partial | Reference client ([quickstart](https://modelcontextprotocol.io/quickstart/user)) |
-| **Claude Code** | yes | yes | yes | yes | yes | Most complete MCP consumer in Anthropic's stack |
-| **Cursor** | yes | yes | yes | **no** | yes | One-click install from Cursor Marketplace; stdio/SSE/Streamable HTTP with OAuth ([docs](https://cursor.com/docs/context/mcp)) |
-| **VS Code (Copilot)** | yes | yes | yes | — | — | Tools, resources, prompts, + MCP Apps for interactive UI ([docs](https://code.visualstudio.com/docs/copilot/chat/mcp-servers)) |
-| **Windsurf** | yes | yes | yes | — | — | stdio/Streamable HTTP/SSE with OAuth; 100-tool cap; MCP Marketplace ([docs](https://docs.windsurf.com/windsurf/cascade/mcp)) |
-| **Zed** | yes | — | yes | — | — | Handles `notifications/tools/list_changed`; no resources, sampling, elicitation yet ([docs](https://zed.dev/docs/ai/mcp.html)) |
-| **Continue** | yes | unclear | unclear | — | — | MCP in *agent mode only* ([docs](https://docs.continue.dev/customize/deep-dives/mcp)) |
+| Client                | T   | R       | P       | S       | E       | Notes                                                                                                                          |
+| --------------------- | --- | ------- | ------- | ------- | ------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Claude Desktop**    | yes | yes     | yes     | partial | partial | Reference client ([quickstart](https://modelcontextprotocol.io/quickstart/user))                                               |
+| **Claude Code**       | yes | yes     | yes     | yes     | yes     | Most complete MCP consumer in Anthropic's stack                                                                                |
+| **Cursor**            | yes | yes     | yes     | **no**  | yes     | One-click install from Cursor Marketplace; stdio/SSE/Streamable HTTP with OAuth ([docs](https://cursor.com/docs/context/mcp))  |
+| **VS Code (Copilot)** | yes | yes     | yes     | —       | —       | Tools, resources, prompts, + MCP Apps for interactive UI ([docs](https://code.visualstudio.com/docs/copilot/chat/mcp-servers)) |
+| **Windsurf**          | yes | yes     | yes     | —       | —       | stdio/Streamable HTTP/SSE with OAuth; 100-tool cap; MCP Marketplace ([docs](https://docs.windsurf.com/windsurf/cascade/mcp))   |
+| **Zed**               | yes | —       | yes     | —       | —       | Handles `notifications/tools/list_changed`; no resources, sampling, elicitation yet ([docs](https://zed.dev/docs/ai/mcp.html)) |
+| **Continue**          | yes | unclear | unclear | —       | —       | MCP in *agent mode only* ([docs](https://docs.continue.dev/customize/deep-dives/mcp))                                          |
 
 Sampling remains the least-implemented capability; Cursor explicitly doesn't support it and most IDEs haven't either.
 
 ### OpenAI, Google, and cross-vendor convergence
 
 **OpenAI** adopted MCP in phases through 2025:
+
 - **March 26, 2025**: Agents SDK MCP support; commitment to API + ChatGPT desktop
 - **May 21, 2025**: MCP in **Responses API** ([docs](https://platform.openai.com/docs/guides/tools-remote-mcp))
 - **October 6, 2025** (DevDay): **Apps SDK** launched — ChatGPT apps are literally MCP servers that additionally return embedded UI resources for chat-surface rendering ([developers.openai.com/apps-sdk](https://developers.openai.com/apps-sdk/concepts/mcp-server))
@@ -84,6 +85,7 @@ Sampling remains the least-implemented capability; Cursor explicitly doesn't sup
 **Official reference servers** ([github.com/modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers)) were narrowed to seven educational examples (Everything, Fetch, Filesystem, Git, Memory, Sequential Thinking, Time). Thirteen previously-official third-party integrations (GitHub, GitLab, Slack, Postgres, Brave Search, Google Drive, Puppeteer, Sentry, SQLite, etc.) were **archived** — Anthropic pushed vendors to own their first-party servers.
 
 **Official MCP Registry** ([registry.modelcontextprotocol.io](https://registry.modelcontextprotocol.io/)) — "app store for MCP servers":
+
 - Preview Sep 8, 2025
 - API freeze v0.1 Oct 24, 2025
 - Maintainers: Adam Jones (Anthropic), Tadas Antanavicius (PulseMCP), Toby Padilla (GitHub), Radoslav Dimitrov (Stacklok), + Block / VS Code / NuGet / Microsoft
@@ -91,6 +93,7 @@ Sampling remains the least-implemented capability; Cursor explicitly doesn't sup
 - Deliberately **thin** authoritative root; third-party subregistries (Glama, PulseMCP, Smithery) handle richer discovery
 
 **Third-party directories**:
+
 - **Glama MCP directory** ([glama.ai/mcp/servers](https://glama.ai/mcp/servers)): **21,891 open-source servers** (Apr 21, 2026). 9,748 remote-capable; top categories: Developer Tools (7,725), App Automation (4,057), Search (4,031)
 - **PulseMCP** ([pulsemcp.com](https://www.pulsemcp.com/servers)): **12,992 servers** (Apr 2026); runs "THE MCP newsletter"; feeds official registry
 - **awesome-mcp-servers** ([github.com/punkpeye/awesome-mcp-servers](https://github.com/punkpeye/awesome-mcp-servers)): 85.2k GitHub stars
@@ -102,12 +105,14 @@ Category inventory (stable for 12+ months): filesystem/Git, databases (Postgres,
 ### Strengths and limitations (April 2026)
 
 **Strengths:**
+
 - Cross-vendor standardization achieved
 - OAuth 2.1 auth story mature after June + Nov 2025 revisions
 - Streamable HTTP transport works behind standard CDN/load-balancer
 - Clear governance under LF reduces single-vendor-capture risk
 
 **Limitations:**
+
 - **Token cost is the dominant complaint.** A popular MCP server can consume 55,000+ tokens just advertising tools ([Simon Willison, 2025-10-16](https://simonwillison.net/2025/Oct/16/claude-skills/)). GitHub's official MCP is repeatedly cited as an offender.
 - **Security**: the "lethal trifecta" (private-data access + untrusted content + outbound communication; [Simon Willison, 2025-06-16](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/)) has been demonstrated against Microsoft 365 Copilot, GitHub's official MCP, GitLab Duo. Specific incidents:
   - **Notion 3.0 (Sep 19, 2025)**: hidden PDF instructions → data exfiltration
@@ -137,6 +142,7 @@ Category inventory (stable for 12+ months): filesystem/Git, databases (Postgres,
 An Agent Skill is a folder containing a `SKILL.md` file (YAML frontmatter + Markdown body) plus optional supporting files (reference docs, examples, executable scripts). Frontmatter has a `description` loaded into the agent's tool/skill listing; when the model decides the skill is relevant — or a user types `/<skill-name>` — the full `SKILL.md` body is injected and bundled scripts become runnable via the agent's existing Bash/execution tools ([Claude Code skills docs](https://code.claude.com/docs/en/skills)).
 
 **Timeline:**
+
 - **October 16, 2025**: Anthropic launches Claude Skills ([claude.com/blog/skills](https://claude.com/blog/skills))
 - **December 18, 2025**: Org-wide skills management + partner skills directory
 - **April 2026**: format is cross-vendor under **Agent Skills** at [agentskills.io](https://agentskills.io), listed as "originally developed by Anthropic, released as an open standard"
@@ -145,27 +151,29 @@ An Agent Skill is a folder containing a `SKILL.md` file (YAML frontmatter + Mark
 
 ### Mechanism vs MCP
 
-| | **Agent Skills** | **MCP servers** |
-|---|---|---|
-| **Transport** | Files on disk (or plugin bundle) | JSON-RPC over stdio / Streamable HTTP |
-| **Discovery** | Agent scans skills directories; descriptions (~few dozen tokens each) always in context | `tools/list` call on server; full tool schemas in context |
-| **Invocation** | Model selects → rendered SKILL.md injected as a single message | Model selects → JSON-RPC call → response |
-| **Execution** | Agent's own runtime (reads files, runs scripts via Bash) | Separate process or remote server |
-| **Auth** | Filesystem permissions | OAuth 2.1, API keys |
-| **State** | Stateless | Stateful JSON-RPC session |
-| **Token cost** | Minimal until invoked; full body loads on demand | Full tool schemas always in context |
-| **Network** | Not required | Usually required |
+|                | **Agent Skills**                                                                        | **MCP servers**                                           |
+| -------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| **Transport**  | Files on disk (or plugin bundle)                                                        | JSON-RPC over stdio / Streamable HTTP                     |
+| **Discovery**  | Agent scans skills directories; descriptions (~few dozen tokens each) always in context | `tools/list` call on server; full tool schemas in context |
+| **Invocation** | Model selects → rendered SKILL.md injected as a single message                          | Model selects → JSON-RPC call → response                  |
+| **Execution**  | Agent's own runtime (reads files, runs scripts via Bash)                                | Separate process or remote server                         |
+| **Auth**       | Filesystem permissions                                                                  | OAuth 2.1, API keys                                       |
+| **State**      | Stateless                                                                               | Stateful JSON-RPC session                                 |
+| **Token cost** | Minimal until invoked; full body loads on demand                                        | Full tool schemas always in context                       |
+| **Network**    | Not required                                                                            | Usually required                                          |
 
 Simon Willison's April 2026 framing: *"Almost everything I might achieve with an MCP can be handled by a CLI tool instead"* — an agent with a shell + markdown playbook is frequently a cheaper substitute for a stateful MCP server.
 
 ### OpenAI, Google, and third-party equivalents
 
 **OpenAI:**
+
 - **Custom GPTs** (Nov 2023, pre-MCP): prompt + files + Actions. Closest to skills, but ChatGPT-only.
 - **ChatGPT Apps (Apps SDK, Oct 2025)**: MCP-based; fills the "MCP server" slot, not the "skill" slot.
 - **OpenAI Codex skills**: adopted the **Agent Skills open standard** ([developers.openai.com/codex/skills](https://developers.openai.com/codex/skills/)). So OpenAI ships both — Apps SDK for MCP surface, Codex skills for Agent Skills surface.
 
 **Google:**
+
 - **Gemini Gems**: closed, consumer-facing custom assistants (2024). Not developer-distributable.
 - **Gemini CLI**: ships Agent Skills support ([geminicli.com/docs/cli/skills](https://geminicli.com/docs/cli/skills/)).
 - **ADK**: its own framework, not a skill format.
@@ -175,6 +183,7 @@ Simon Willison's April 2026 framing: *"Almost everything I might achieve with an
 ### When skill vs MCP vs both
 
 **Skill** when:
+
 - Procedural knowledge / playbook (style guide, domain ontology, workflow)
 - Tied to code/scripts that run in the agent's own runtime
 - Fine to package as portable files
@@ -182,6 +191,7 @@ Simon Willison's April 2026 framing: *"Almost everything I might achieve with an
 - Deterministic: given inputs X, run `script.py X`
 
 **MCP server** when:
+
 - Live/networked (SaaS API, DB, stream)
 - Stateful across calls
 - Requires server-managed auth or metered access
@@ -189,6 +199,7 @@ Simon Willison's April 2026 framing: *"Almost everything I might achieve with an
 - Must survive independently of any client's runtime
 
 **Both** is increasingly idiomatic:
+
 1. **Skill wraps an MCP server** — the SKILL.md tells the agent *how to use* a specific MCP server effectively (which tools in what order, how to interpret output). MCP = raw capability; skill = judgment.
 2. **MCP server ships alongside a matching skill** — the vendor publishes both: the server for API access + the skill for workflow.
 3. **Skill as thin wrapper over a CLI** — per Willison, many MCP servers could just be `skill + bash CLI`.
@@ -216,6 +227,7 @@ Function calling / tool use has moved from experimental add-on to default archit
 By early 2026 the question has flipped from "can LLMs use tools" to "can they use them without drowning in tokens." **ComplexFuncBench** ([Jan 2025](https://arxiv.org/abs/2501.10132)) documents that even SOTA models stumble on multi-step function calling in 128k contexts. **ToolSandbox** ([Apple, Aug 2024](https://arxiv.org/abs/2408.04682)) extends evaluation to stateful, conversational tool use. The shift is visible in protocols: MCP (Nov 2024); Cloudflare remote MCP (Mar 25, 2025); OpenAI Apps SDK (Oct 2025); MCP donation to AAIF (Dec 9, 2025).
 
 Three mechanisms coexist:
+
 - **Inline function calling** (native APIs) — single-turn JSON tool schemas
 - **MCP servers** — out-of-process providers with discovery, resources, prompts. Adoption crossed OpenAPI's GitHub-star trendline by mid-2025 ([latent.space](https://www.latent.space/p/why-mcp-won))
 - **Code-execution sandboxes** — agent writes code against tools-as-libraries. Anthropic's "Code execution with MCP" (Nov 4, 2025) was shipped precisely because raw MCP schemas in context were too expensive. HuggingFace **smolagents** (Dec 31, 2024) builds the same idea from the opposite direction — agents write Python, import tools as functions
@@ -235,6 +247,7 @@ Three mechanisms coexist:
 ### Wins vs losses — what made the difference
 
 **Wins** (Harvey, OpenEvidence, Wolfram Agent One) share three traits:
+
 1. Proprietary data or calculation engines base models demonstrably get wrong (USMLE-level medicine, jurisdictional case law, arbitrary-precision math)
 2. The product wraps calculation in a domain-native UX and workflow, not a raw tool
 3. Monetization flows through the vertical (seat-based SaaS, API partner deals), not through an MCP directory
@@ -258,6 +271,7 @@ Three mechanisms coexist:
 As of April 2026, discovery is overwhelmingly **manual**. Across Claude Desktop, Claude Code, Cursor, Windsurf, VS Code, and ChatGPT's Apps SDK: a human enables a server by name in config, authenticates once, those tools are exposed to the model for the session. Within a session the model sees only what the harness pre-loaded. a16z's deep dive lists "server discoverability" and "dynamic discovery" as unresolved ([a16z](https://a16z.com/a-deep-dive-into-mcp-and-the-future-of-ai-tooling/)).
 
 Semi-automatic discovery exists in narrow pockets:
+
 - **Anthropic Skills** (Oct 16, 2025) use progressive disclosure: name+description always in system prompt; `SKILL.md` loads when matched; bundled references load on demand. Still constrained to skills already installed.
 - **OpenAI ChatGPT Apps** surfaces apps the user has enabled.
 - **Claude Code / Cursor / Goose** let you reference a catalog, but the user picks.
@@ -267,6 +281,7 @@ Semi-automatic discovery exists in narrow pockets:
 ### Registries, hubs, marketplaces (April 2026)
 
 **Official MCP Registry** ([registry.modelcontextprotocol.io](https://registry.modelcontextprotocol.io/)):
+
 - 6.7k GitHub stars, 745 forks
 - API v0.1 frozen Oct 24, 2025 (pre-GA)
 - Maintainers from Anthropic, GitHub, PulseMCP, Block, Stacklok, VS Code, NuGet, Microsoft, Last9
@@ -274,6 +289,7 @@ Semi-automatic discovery exists in narrow pockets:
 - Intentionally small and curated — my fetch of `/v0/servers` showed only 30 surfaced
 
 **Third-party directories** (with retrieved numbers):
+
 - **Glama**: 21,891 servers; $9 / $26 / $80/mo tiers (hosting slots, 3/10/30 servers) ([glama.ai/pricing](https://glama.ai/pricing))
 - **PulseMCP**: 12,992 servers
 - **awesome-mcp-servers**: 85.2k GitHub stars, 9.3k forks
@@ -296,9 +312,11 @@ Indirect evidence that server docs *do* leak into training data: (a) the 1,899-s
 ### Academic work on tool selection from large dynamic inventories
 
 Foundations (flagged >12 months):
+
 - **Toolformer** (Feb 2023); **Gorilla** (May 2023); **ToolLLM/ToolBench** (Jul 2023); **API-BLEND** (ACL 2024); **EASYTOOL** (Jan 2024)
 
 Last 18 months on-topic:
+
 - **Toolshed: RAG-Tool Fusion** ([arXiv 2410.14594](https://arxiv.org/abs/2410.14594), Oct 2024) — vector-DB tool index with pre/intra/post-retrieval phases; 46–56% Recall@5 improvements. Clearest template for "semantic tool retrieval from large dynamic inventories."
 - **ComplexFuncBench** ([2501.10132](https://arxiv.org/abs/2501.10132), Jan 2025)
 - **MCP: Landscape, Security Threats, and Future Research Directions** ([2503.23278](https://arxiv.org/abs/2503.23278), Mar 2025)
@@ -392,6 +410,7 @@ Glama's own plans run $9 / $26 / $80 /mo with equivalent AI credits + hosting sl
 This is exactly the architecture Wolfram described in March 2023: "ChatGPT is formulating a query for Wolfram|Alpha—then sending it to Wolfram|Alpha for computation, and then 'deciding what to say' based on reading the results it got back" ([Stephen Wolfram, Mar 2023](https://writings.stephenwolfram.com/2023/03/chatgpt-gets-its-wolfram-superpowers/)).
 
 Formalized in recent research:
+
 - **RAG-MCP** ([arXiv 2505.03275](https://arxiv.org/abs/2505.03275), May 6, 2025). Explicitly applies RAG to tool selection: "semantic retrieval to identify relevant tools before engaging the LLM." **Prompt tokens reduced >50%; tool selection accuracy tripled from 13.62% baseline to 43.13%.** The academic version of "question classifier → specialized calculator."
 - **ToolRegistry** ([arXiv 2507.10593](https://arxiv.org/abs/2507.10593), Jul 2025). Protocol-agnostic tool management with MCP + OpenAPI adapters and semantic routing. Claims 60–80% integration-code reduction, 3.1x concurrent execution speedup.
 - **MCIP** ([arXiv 2505.14590](https://arxiv.org/abs/2505.14590), May 2025, EMNLP 2025). Safety-layer version of the classifier pattern.
@@ -432,6 +451,7 @@ Across all seven astrology brands: **none have moved from consumer app to a publ
 **Andreessen Horowitz (a16z).** Infrastructure practice led by **Martin Casado** — board seats on Cursor, Kong, Netlify, Material Security. Public writing 2025–2026 emphasizes "how foundation models transition toward agentic systems" ([a16z](https://a16z.com/author/martin-casado/)). **a16z Speedrun** has deployed "over $180M across 150+ startups" since 2023, SR007 cohort July–Oct 2026 in SF ([a16z Speedrun](https://a16z.com/speedrun/)) — the firm's YC-shaped entry point for AI-native founders.
 
 **Sequoia.** Relevant 2024–2025 agent-infra bets:
+
 - **Agency** — "AI agent for customer success," 2024, partners Pat Grady + Julien Bek
 - **Airtop** — intelligent browser automation for AI agents
 - **Auctor** — 2025 early-stage, partner Julien Bek; "AI-native system of action for software implementation"
@@ -451,6 +471,7 @@ Across all seven astrology brands: **none have moved from consumer app to a publ
 **OpenAI Startup Fund.** Primary fetches 403. Through secondary reporting: less about seeding MCP startups, more about enabling Apps-in-ChatGPT partners. *(Under-sourced — treat thinly.)*
 
 **Y Combinator.** Spring 2026 RFS explicit on the agent thesis:
+
 - **"AI-Native Hedge Funds"**: "swarms of agents doing what hedge fund traders do now"
 - **"Cursor for Product Managers"**: "As agents increasingly take the first pass at implementation, the way we define and communicate 'what to build' needs to change"
 - **"Make LLMs Easy to Train"** — infra gaps in training APIs and ML dev environments ([YC RFS](https://www.ycombinator.com/rfs))
@@ -496,6 +517,7 @@ Specific W25/S25/W26 company enumeration could not be reliably produced from pri
 ### What happens to third-party MCP servers if Anthropic or OpenAI ships first-party versions?
 
 **The third-party product does not disappear, but its growth ceiling collapses and its exit paths shrink to acqui-hire.** Platforms ship first-party versions when:
+
 1. The category becomes load-bearing for the platform's own UX
 2. The category is narrow enough that one good implementation wins
 3. Platform owner judges the LTV of owning the category is higher than goodwill cost of alienating devs
@@ -577,13 +599,13 @@ AstroPrompt has none of (a)–(c) yet. The calculations are replicable by anyone
 
 ### Strategic options comparison
 
-| Option | Preconditions | Time-to-evidence | Capital required | Incumbent risk | Upside if it works | Recommended next action |
-|---|---|---|---|---|---|---|
-| **A. Open-source + paper** | Willingness to GPL the MCP wrapper; drafting bandwidth for arXiv | 6–12 months to measurable traction (inbound links, GitHub stars) | Low — solo-dev time only | Low — no category for anyone to copycat | Modest — credibility and slow organic discovery | Publish the MCP server to GitHub under GPL (Astrolog is already GPL); draft short paper, submit to arXiv cs.AI or cs.CL; use as **supporting evidence**, not primary strategy |
-| **B. Marketplace** | A working MCP server with small tool surface (3–6 tools); docs and examples | 2–8 weeks to install counts, return visits, error logs | Very low — hosting on Cloudflare Workers ~$0–25/mo to start | Low short-term; medium if Anthropic/OpenAI later build an astrology-adjacent first-party (unlikely) | Weak direct monetization; strong **validation signal** | Ship to Official MCP Registry + Glama + PulseMCP + awesome-mcp-servers within 30 days; instrument usage; treat as market test, not revenue engine |
-| **C. Skill-first** | A crisp, useful SKILL.md + bundled calculator (CLI or MCP); clear audience segment | 1–3 months to skill-directory install counts and usage telemetry | Low — solo-dev time + hosting for any backing API | Low — skills are portable across ~30 agent products; Agent Skills is an open standard | High — the *only* channel that carries procedural astrology knowledge into any LLM agent context cheaply | Build a `bad-astrology` or `daily-planner-astro` skill folder with the SKILL.md, reference docs, a bundled Python CLI over Astrolog; ship to the Agent Skills directory, Claude's partner skills directory, Codex skills, Gemini CLI skills |
-| **D. Two-layer (classifier + calculator)** | Willingness to build *and maintain* a question classifier; comfort with RAG/semantic-retrieval tooling | 6–12 months to working system; 12–24 months to adoption | Medium — solo-dev year of work minimum; possibly needs hosted vector DB, embedding costs | High — horizontal routing is exactly what Strata, Smithery, ToolRegistry, and eventual Anthropic/OpenAI platform features will try to absorb | High if you own the classifier for spirituality/wellness broadly; near-zero if horizontal players commoditize routing first | **Do not build the classifier yourself.** Build a best-in-class layer-2 calculator (the Astrolog MCP + skill) with clear intent metadata so horizontal classifiers can route to it. Revisit in 12 months. |
-| **E. Gate + partnership** | Name-brand, captive audience, or irreplaceable data; 3–12 month sales cycles | 6–18 months to first signed partner; 12–24 months to revenue | Medium-high — your time and the opportunity cost of not shipping; possibly travel, contracts, legal | Low — you control access; but platform shifts can kill the partner deal | High if one partner integrates deeply; low-to-zero if they don't | Defer until B and C produce traction signals. Then pursue 1–2 hand-picked partners (possibly an astrology software publisher, or an LLM platform looking for verified-calculation exemplars for their "accurate-domain" story) |
+| Option                                     | Preconditions                                                                                          | Time-to-evidence                                                 | Capital required                                                                                    | Incumbent risk                                                                                                                               | Upside if it works                                                                                                          | Recommended next action                                                                                                                                                                                                                     |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A. Open-source + paper**                 | Willingness to GPL the MCP wrapper; drafting bandwidth for arXiv                                       | 6–12 months to measurable traction (inbound links, GitHub stars) | Low — solo-dev time only                                                                            | Low — no category for anyone to copycat                                                                                                      | Modest — credibility and slow organic discovery                                                                             | Publish the MCP server to GitHub under GPL (Astrolog is already GPL); draft short paper, submit to arXiv cs.AI or cs.CL; use as **supporting evidence**, not primary strategy                                                               |
+| **B. Marketplace**                         | A working MCP server with small tool surface (3–6 tools); docs and examples                            | 2–8 weeks to install counts, return visits, error logs           | Very low — hosting on Cloudflare Workers ~$0–25/mo to start                                         | Low short-term; medium if Anthropic/OpenAI later build an astrology-adjacent first-party (unlikely)                                          | Weak direct monetization; strong **validation signal**                                                                      | Ship to Official MCP Registry + Glama + PulseMCP + awesome-mcp-servers within 30 days; instrument usage; treat as market test, not revenue engine                                                                                           |
+| **C. Skill-first**                         | A crisp, useful SKILL.md + bundled calculator (CLI or MCP); clear audience segment                     | 1–3 months to skill-directory install counts and usage telemetry | Low — solo-dev time + hosting for any backing API                                                   | Low — skills are portable across ~30 agent products; Agent Skills is an open standard                                                        | High — the *only* channel that carries procedural astrology knowledge into any LLM agent context cheaply                    | Build a `bad-astrology` or `daily-planner-astro` skill folder with the SKILL.md, reference docs, a bundled Python CLI over Astrolog; ship to the Agent Skills directory, Claude's partner skills directory, Codex skills, Gemini CLI skills |
+| **D. Two-layer (classifier + calculator)** | Willingness to build *and maintain* a question classifier; comfort with RAG/semantic-retrieval tooling | 6–12 months to working system; 12–24 months to adoption          | Medium — solo-dev year of work minimum; possibly needs hosted vector DB, embedding costs            | High — horizontal routing is exactly what Strata, Smithery, ToolRegistry, and eventual Anthropic/OpenAI platform features will try to absorb | High if you own the classifier for spirituality/wellness broadly; near-zero if horizontal players commoditize routing first | **Do not build the classifier yourself.** Build a best-in-class layer-2 calculator (the Astrolog MCP + skill) with clear intent metadata so horizontal classifiers can route to it. Revisit in 12 months.                                   |
+| **E. Gate + partnership**                  | Name-brand, captive audience, or irreplaceable data; 3–12 month sales cycles                           | 6–18 months to first signed partner; 12–24 months to revenue     | Medium-high — your time and the opportunity cost of not shipping; possibly travel, contracts, legal | Low — you control access; but platform shifts can kill the partner deal                                                                      | High if one partner integrates deeply; low-to-zero if they don't                                                            | Defer until B and C produce traction signals. Then pursue 1–2 hand-picked partners (possibly an astrology software publisher, or an LLM platform looking for verified-calculation exemplars for their "accurate-domain" story)              |
 
 ### Recommended sequencing
 
